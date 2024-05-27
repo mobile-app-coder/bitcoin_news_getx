@@ -7,7 +7,7 @@ import 'http_helper.dart';
 
 class Network {
   static const String API_KEY = "1533026a3de741a3a8d3cdb44aaa703e";
-  static String BASE = "https://newsapi.org";
+  static String BASE = "newsapi.org";
   static String API = "/v2/everything";
 
   static final client = InterceptedClient.build(
@@ -16,11 +16,9 @@ class Network {
   );
 
   /* Http Requests */
-  static Future<String?> GET(
-    String api,
-  ) async {
+  static Future<String?> GET() async {
     try {
-      var uri = Uri.https(BASE, api, params());
+      var uri = Uri.https(BASE, API, params());
       var response = await client.get(uri);
       if (response.statusCode == 200) {
         return response.body;
