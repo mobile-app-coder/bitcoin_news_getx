@@ -1,6 +1,8 @@
 import 'package:bitcoin_news_getx/getx/home_controller.dart';
 import 'package:bitcoin_news_getx/models/new_response_model.dart';
+import 'package:bitcoin_news_getx/pages/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final HomeController _homeController = Get.find<HomeController>();
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -33,7 +36,14 @@ class _HomePageState extends State<HomePage> {
             size: 35,
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            scrollController.jumpTo(0);
+          },
+          child: const Icon(CupertinoIcons.up_arrow),
+        ),
         body: ListView.builder(
+            controller: scrollController,
             itemCount: _homeController.news.length,
             itemBuilder: (context, index) {
               return _itemArticle(_homeController.news[index]);
@@ -44,6 +54,17 @@ class _HomePageState extends State<HomePage> {
 
   Widget _itemArticle(Article article) {
     return GestureDetector(
+      onTap: () {
+        _homeController.launch(article.url!);
+      },
+      onLongPress: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+          return DetailsPage(
+            url: article.url!,
+          );
+        }));
+      },
       child: Container(
         margin: const EdgeInsets.only(right: 5, left: 5, bottom: 5),
         width: double.infinity,
@@ -65,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                     flex: 1,
                     child: CachedNetworkImage(
                       imageUrl: article.urlToImage!,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                       placeholder: (context, url) => Container(),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
